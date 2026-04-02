@@ -199,7 +199,7 @@ npm run dev
 
 ## 🌐 Live Demo
 
-👉 https://etinsightsai.vercel.app/
+👉 https://insight-x-ai.vercel.app
 
 ---
 
