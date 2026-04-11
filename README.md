@@ -183,7 +183,8 @@ Each news article is transformed into:
 - 📊 User behavior learning  
 - 🧠 Smarter prediction models  
 - 📹 AI-generated video summaries  
-- 🧩 Gamified learning for kids  
+- 🧩 Gamified learning for kids
+- 🤖 **Option 2 Architecture Upgrade**: Future potential to swap out generalized LLM prompts for specialized local/remote models via the **HuggingFace Serverless Inference API** (e.g. `facebook/bart-large-cnn` for explicit summarization, `cardiffnlp/twitter-roberta-base-sentiment` for sentiment).  
 
 ---
 

@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+supabase
+pgvector
+groq
+httpx
+python-dotenv
+pydantic>=2.0
+gTTS
+newspaper3k
+pydantic-settings
+yfinance
