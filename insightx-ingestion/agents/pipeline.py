@@ -65,10 +65,11 @@ async def run_pipeline(title: str = None, content: str = None, article_id: str =
         "  \"future_predictions\": [\"Prediction 1\", \"Prediction 2\"]\n"
         "}\n\n"
         "Profile-specific action_data rules:\n"
-        "- student: inject {\"career_impact\": [\"impact 1\"]}\n"
-        "- investor: inject {\"stock_impact\": [\"impact 1\"]}\n"
-        "- young explorer: inject {\"quiz\": {\"question\": \"...\", \"options\": [\"A\",\"B\",\"C\",\"D\"], \"answer_index\": 0}, \"glossary\": [\"term 1\"]}\n"
-        "- default: inject {\"suggested_actions\": [\"action 1\"]}"
+        "EVERY profile MUST contain 'suggested_actions': [\"action 1\", \"action 2\"]\n"
+        "- student: also inject {\"career_impact\": [\"impact 1\"]}\n"
+        "- investor: also inject {\"stock_impact\": [\"impact 1\"]}\n"
+        "- young explorer: also inject {\"young_explorer_impact\": [\"impact 1\"], \"quiz\": {\"question\": \"...\", \"options\": [\"A\",\"B\",\"C\",\"D\"], \"answer_index\": 0}, \"glossary\": [\"term 1\"]}\n"
+        "- general: also inject {\"general_impact\": [\"impact 1\"]}"
     )
     
     user_prompt = f"PROFILE: {profile}\n\nTITLE: {article_title}\n\nCONTENT:\n{article_text[:6000]}"
@@ -96,6 +97,11 @@ async def run_pipeline(title: str = None, content: str = None, article_id: str =
         custom_insights["career_impact"] = action_data["career_impact"]
     if "stock_impact" in action_data:
         custom_insights["portfolio_signals"] = action_data["stock_impact"]
+    if "young_explorer_impact" in action_data:
+        custom_insights["fun_facts"] = action_data["young_explorer_impact"]
+    if "general_impact" in action_data:
+        custom_insights["general_insight"] = action_data["general_impact"]
+        
     if "suggested_actions" in action_data:
         next_steps = action_data["suggested_actions"]
     if "quiz" in action_data:
