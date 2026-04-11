@@ -1,239 +1,202 @@
+# 🚀 InsightX AI  
+### *Understand the World Around You*
 
-# 🧠 ET Insight AI — News Understanding Engine
-
-## 📌 Overview
-
-ET Insight AI is an AI-powered news experience that transforms passive reading into active understanding. Instead of just showing what happened, the system explains why it matters, how it affects the user personally, what actions can be taken next, and what future developments to watch.
+An **AI-powered news understanding platform** that transforms raw news into **personalized insights, impact analysis, and actionable intelligence**.
 
 ---
 
-## 🚨 Problem
+## 🌍 Problem
 
-Traditional news platforms:
+In today’s digital world, news is:
 
-* Deliver the same content to everyone
-* Focus on events, not consequences
-* Lack personalization and actionable insights
+- ❌ Static and one-size-fits-all  
+- ❌ Focused on *what happened*, not *why it matters*  
+- ❌ Overwhelming and hard to connect with personally  
 
-This results in:
-
-* Information overload
-* Low understanding
-* Low engagement
+👉 Result:  
+Users consume news but **don’t truly understand it**
 
 ---
 
 ## 💡 Solution
 
-ET Insight AI introduces a multi-layered system that:
+**InsightX AI** converts news into:
 
-* Personalizes news feed based on user type
-* Generates cause-effect impact chains
-* Explains personal relevance
-* Suggests actionable next steps
-* Predicts what to watch next
+- 🧠 Structured understanding  
+- 🔗 Cause–effect chains  
+- 🎯 Personalized insights  
+- ⚡ Actionable suggestions  
 
----
-
-## 🔥 Key Features
-
-### 1. Personalized Feed
-
-* News tailored to user type (Student, Investor, General)
+All tailored to **who you are and what you care about**
 
 ---
 
-### 2. Impact Reasoning Engine ⭐
+## 🧠 Key Features
 
-* Generates structured cause-effect chains
-
-**Example:**
-
-```
-Conflict → Oil supply ↓ → Oil prices ↑ → Inflation ↑
-```
-
----
-
-### 3. Personal Impact Layer
-
-* Explains how news affects the individual user
+### 🔐 Smart Onboarding
+- User inputs:
+  - Name
+  - Email
+  - Profile (Student / Investor / General / Young Explorer)
+  - Interests (dynamic tag system ➕)
+- Enables **personalized news experience**
 
 ---
 
-### 4. Action Suggestions
+### 📰 AI-Powered News Feed
 
-* Provides contextual, non-prescriptive actions users can take
+#### 🧱 3-Column Layout
 
----
+- **Left Sidebar → Quick Reads**
+  - Text-only headlines for fast scanning
 
-### 5. What to Watch Next
+- **Center → Main Feed**
+  - Top Stories  
+  - For You (personalized)
 
-* Predicts future developments related to the news
-
----
-
-### 6. Confidence Layer
-
-* Adds uncertainty awareness and responsible AI disclaimers
+- **Right Sidebar → Visual Stories**
+  - Image & video-based news  
 
 ---
 
-## ✨ Extension Features
+### 🎯 Profile-Based Personalization
 
-* 🌐 Multi-language support (English, Hindi, Marathi)
-* 🎧 Audio mode (Text-to-Speech)
-* 🎥 Video mode (UI simulated for demo)
+#### 👩‍🎓 Student
+- Tech, startups, innovation, global trends  
+
+#### 💼 Investor / Business
+- Markets, economy, commodities  
+- Includes **market overview dashboard**
+
+#### 🌍 General
+- Balanced global + national feed  
+
+#### 🧒 Young Explorer
+- Simplified news  
+- Fun facts ("Did You Know?")  
+- Quizzes + learning elements  
+
+---
+
+### 🧠 AI Insight Engine
+
+Each news article is transformed into:
+
+- 📌 Event Understanding  
+- 🔗 Chain Reaction (cause-effect)  
+- 👤 What it means for YOU  
+- ⚡ Action Suggestions  
+- 🔮 Future Signals (predictions)  
+
+---
+
+### 📄 Article Modes
+
+- 📝 Summary View  
+- 📖 Full Article View  
+- 🔊 Audio (TTS ready)  
+- 🌐 Translation support  
+
+---
+
+### 🎮 Interactive Learning (Young Explorer)
+
+- ✨ Expandable “Did You Know” cards  
+- 🧩 Quick quizzes  
+- 🎨 Kid-friendly UI  
+
+---
+
+### 🔄 AI Pipeline:
+
+1. Event Extraction  
+2. Reasoning (Impact Chain)  
+3. Personalization  
+4. Action Generation  
+5. Prediction Layer  
 
 ---
 
 ## ⚙️ Tech Stack
 
-* **Frontend:** Antigravity (UI builder)
-* **AI (Planned):** OpenAI API / Google Gemini API
-* **Audio:** gTTS / ElevenLabs
-* **Translation:** LLM-based / LibreTranslate
-* **Deployment:** Vercel
+### 🖥️ Frontend
+- React 19 + Vite  
+- JavaScript (ES Modules)  
+- Custom CSS (Flexbox + Grid)  
+- Lucide React (icons)  
+- PWA Support  
 
 ---
 
-## 🎬 Demo Flow
+### ⚙️ Backend
+- Python + FastAPI  
+- REST API architecture  
+- AI pipeline handling  
 
-1. User selects profile (Student / Investor / General)
-2. Personalized feed is displayed
-3. User selects a news article
-4. System generates:
+---
 
-   * Impact chain
-   * Personal impact
-   * Action suggestions
-   * What to watch next
-5. Optional:
+### 🧠 AI / Core Logic
+- OpenAI API / Google Gemini  
+- Modular AI pipeline  
+- Optional LangChain (orchestration)
 
-   * Language toggle
-   * Audio playback
-   * Video preview
+---
+
+### 🗄️ Database
+- Supabase / NeonDB  
+- PostgreSQL + pgvector  
+
+---
+
+### 🌐 Data Sources
+- GNews API  
+- NewsAPI.org
+- Youtube Data API v3  
+
+---
+
+### 🚀 Deployment
+- Frontend → Vercel  
+- Backend → Render  
+
+---
+
+### 🔊 Multi-Modal Features
+- gTTS (Text-to-Speech)  
+- AI Translation  
 
 ---
 
 ## 🧱 Architecture Overview
 
-The system follows a modular pipeline:
+- News fetched via APIs  
+- Processed through AI pipeline  
+- Stored (optional) in database  
+- Served via FastAPI  
+- Rendered in React dashboard  
+ 
+---
 
-```
-User → Feed Agent → Event Understanding → Impact Reasoning → 
-Personalization → Action Layer → Prediction → Confidence Layer
-```
+## 🚀 Future Scope
+
+- 🔁 Real-time personalization via embeddings  
+- 📊 User behavior learning  
+- 🧠 Smarter prediction models  
+- 📹 AI-generated video summaries  
+- 🧩 Gamified learning for kids  
 
 ---
 
-## 📊 Impact Model
+## 👥 Team
 
-### Assumptions:
-
-* Average user understanding of news: ~30%
-* With system: ~70%
-
-### Impact:
-
-* ~2x improvement in comprehension
-* Increased engagement and retention
-* Better decision-making
+**Team Crusaders**  
+Cummins College of Engineering, Pune  
 
 ---
 
-## ⚠️ Prototype Note
+## ⭐ Why This Matters
 
-This project is a **functional prototype/demo built within hackathon constraints**.
+👉 Information is abundant  
+👉 Understanding is not  
 
-* The current implementation uses **hardcoded data and responses** to demonstrate the complete user flow and experience.
-* AI-generated outputs such as:
-
-  * Impact chains
-  * Personalization
-  * Action suggestions
-  * Predictions
-    are **simulated for demonstration purposes only**.
-
----
-
-## 🔮 Intended Full Implementation
-
-In a production-ready system, real AI APIs would be integrated, including:
-
-* **Google Gemini API**
-* **OpenAI API**
-
-These would power:
-
-* Event understanding
-* Impact reasoning generation
-* Personalized insights
-* Action recommendations
-* Multi-language translation
-* Audio/video generation
-
-👉 The current architecture is designed to seamlessly support these integrations.
-
----
-
-## 🚀 Setup Instructions
-
-### 1. Clone Repository
-
-```bash
-git clone https://github.com/Shahpure03/ET-HACKATHON
-```
-
-### 2. Install Dependencies
-
-```bash
-npm install
-```
-
-### 3. Run Locally
-
-```bash
-npm run dev
-```
-
-## 🌐 Live Demo
-
-👉 https://insight-x-ai.vercel.app
-
----
-
-## 📽️ Demo Video
-
- https://drive.google.com/drive/folders/1g7Qo_dHkeFFTkByJK4jvO2jMRysIe0Me?usp=sharing
-  
----
-
-## 🧠 Key Insight
-
-> “We don’t just personalize the news you see — we help you understand its impact, act on it, and anticipate what comes next.”
-
----
-
-## 📌 Note
-
-* Video generation is simulated for demo purposes
-* Designed for scalability into a full AI-powered system
-
----
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**InsightX AI bridges that gap**
