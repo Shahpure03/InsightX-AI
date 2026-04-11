@@ -3,7 +3,7 @@ import {
   User, ChevronRight, ArrowLeft, Languages, Headphones, MonitorPlay,
   ArrowUp, ArrowDown, Minus, TrendingUp, TrendingDown,
   BrainCircuit, GraduationCap, Briefcase, Globe,
-  Rocket, Lightbulb, CheckCircle2, XCircle
+  Rocket, Lightbulb, CheckCircle2, XCircle, LogOut
 } from 'lucide-react';
 import './App.css';
 
@@ -26,7 +26,7 @@ const NEWS_DATA = [
     summary: 'Rising tensions disrupt major shipping lanes, affecting logistics and global supply chains.',
     hindiSummary: 'बढ़ते तनाव से प्रमुख शिपिंग मार्ग बाधित हो रहे हैं।',
     marathiSummary: 'वाढत्या तणावामुळे प्रमुख शिपिंग मार्ग विस्कळीत.',
-    image: 'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=600&h=400&q=80',
     audioSrc: { en: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', hi: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
     videoSrc: 'https://assets.mixkit.co/videos/preview/mixkit-animation-of-futuristic-devices-and-a-robot-3142-large.mp4',
     isImportant: true,
@@ -82,7 +82,7 @@ const NEWS_DATA = [
     summary: 'New AI models are fundamentally shifting how code and daily tasks are executed.',
     hindiSummary: 'नए एआई मॉडल कोड और दैनिक कार्यों के निष्पादन के तरीके को बदल रहे हैं।',
     marathiSummary: 'नवीन एआय मॉडेल्स काम करण्याच्या पद्धतीत बदल करत आहेत.',
-    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=600&h=400&q=80',
     audioSrc: '',
     videoSrc: '',
     isImportant: true,
@@ -111,7 +111,7 @@ const NEWS_DATA = [
       student: [{ en: 'Focus on prompt engineering and logic', hi: 'प्रॉम्प्ट इंजीनियरिंग पर ध्यान दें' }],
       investor: [{ en: 'Identify leaders in AI hardware', hi: 'एआई हार्डवेयर लीडर्स की पहचान करें' }],
       general: [{ en: 'Try out fundamental AI writing tools', hi: 'बुनियादी एआई टूल्स का प्रयास करें' }],
-      youngExplorer: [{ en: 'Ask a teacher how AI can help you study!', hi: 'शिक्षक से पूछें कि एआई कैसे मदद कर सकता है!' }]
+      youngExplorer: [{ en: 'Ask a teacher how AI can help you study!', hi: 'शिक्षक से पूछें कि एआई कैसे मदद kar sakta hai!' }]
     },
     watchNext: [{ en: 'Enterprise adoption metrics', hi: 'उद्यम निगम मेट्रिक्स' }],
     confidence: { en: 'High', hi: 'उच्च' },
@@ -136,7 +136,7 @@ const NEWS_DATA = [
     summary: 'A breakthrough discovery of pristine water ice could fuel future manned missions.',
     hindiSummary: 'स्वच्छ पानी की बर्फ की खोज भविष्य के मानव मिशन को ऊर्जा दे सकती है।',
     marathiSummary: 'पाण्याची बर्फाची शोध भविष्यातील मानवी मिशनला चालना देऊ शकते.',
-    image: 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&w=600&h=400&q=80',
     audioSrc: '',
     videoSrc: '',
     isImportant: false,
@@ -170,6 +170,37 @@ const NEWS_DATA = [
       ],
       answerIndex: 2
     }
+  },
+  {
+    id: '4',
+    category: 'Economy',
+    title: 'Central Bank Maintains Interest Rates for Q3',
+    hindiTitle: 'केंद्रीय बैंक ने ब्याज दरों को स्थिर रखा',
+    summary: 'The decision aims to balance inflation control with steady economic growth.',
+    image: 'https://images.unsplash.com/photo-1611974717483-5828ff797ae1?auto=format&fit=crop&w=600&h=400&q=80',
+    isImportant: true,
+    impactChain: [{ text: 'Market Stability', direction: 'up' }],
+    personalImpact: {
+       investor: [{ en: 'Borrowing costs remain predictable for businesses', hi: 'व्यवसायों के लिए ऋण लागत अनुमानित बनी हुई है' }],
+       student: [{ en: 'Education loan rates stable for current semester', hi: 'शिक्षा ऋण दरें स्थिर' }],
+       general: [{ en: 'Housing mortgage payments unlikely to spike soon', hi: 'बंधक भुगतान में वृद्धि की संभावना नहीं' }]
+    },
+    whatToDo: { investor: [{ en: 'Assess bond yields vs equity risks', hi: 'बॉन्ड यील्ड और इक्विटी रिस्क का आकलन करें' }] }
+  },
+  {
+    id: '5',
+    category: 'Education',
+    title: 'New Global Scholarship Program for AI Research',
+    hindiTitle: 'एआई रिसर्च के लिए नया वैश्विक छात्रवृत्ति कार्यक्रम',
+    summary: 'Top universities partner to fund 500 doctoral candidates in machine learning.',
+    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=600&h=400&q=80',
+    isImportant: false,
+    impactChain: [{ text: 'Academic Growth', direction: 'up' }],
+    personalImpact: {
+       student: [{ en: 'Huge opportunity for final year tech students', hi: 'अंतिम वर्ष के तकनीकी छात्रों के लिए बड़ा अवसर' }],
+       general: [{ en: 'More research leads to better consumer AI tools', hi: 'बेहतर उपभोक्ता एआई विकास' }]
+    },
+    whatToDo: { student: [{ en: 'Check eligibility criteria on official portal', hi: 'आधिकारिक पोर्टल पर पात्रता मानदंड देखें' }] }
   }
 ];
 
@@ -180,18 +211,26 @@ export default function App() {
   const [lang, setLang] = useState('en'); 
 
   useEffect(() => {
+    // Load stored user data
+    const savedUser = localStorage.getItem('insightx_user');
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      setProfile(userData.role);
+    }
+
     const handleHash = () => {
       const hash = window.location.hash.slice(1);
       if (['landing', 'profile', 'feed', 'insight'].includes(hash)) {
         setCurrentScreen(hash);
       } else {
-        window.location.hash = 'landing';
-        setCurrentScreen('landing');
+        const initialScreen = savedUser ? 'feed' : 'landing';
+        window.location.hash = initialScreen;
+        setCurrentScreen(initialScreen);
       }
     };
     
     if (!window.location.hash) {
-      window.location.hash = 'landing';
+      window.location.hash = savedUser ? 'feed' : 'landing';
     } else {
       handleHash();
     }
@@ -205,6 +244,13 @@ export default function App() {
     window.location.hash = screen;
     setCurrentScreen(screen);
     window.scrollTo(0, 0);
+  };
+
+  const handleOnboardingComplete = (userData) => {
+    // Save to local state and localStorage
+    setProfile(userData.role);
+    localStorage.setItem('insightx_user', JSON.stringify(userData));
+    navigate('feed');
   };
 
   const handleProfileSelect = (selectedProfile) => {
@@ -223,7 +269,7 @@ export default function App() {
         <LandingScreen onEnter={() => navigate('profile')} lang={lang} />
       )}
       {currentScreen === 'profile' && (
-        <ProfileSelection onSelect={handleProfileSelect} lang={lang} />
+        <OnboardingScreen onComplete={handleOnboardingComplete} lang={lang} />
       )}
       {currentScreen === 'feed' && (
         <FeedScreen 
@@ -292,39 +338,150 @@ function LandingScreen({ onEnter, lang }) {
   );
 }
 
-function ProfileSelection({ onSelect, lang }) {
+function OnboardingScreen({ onComplete, lang }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    role: 'student',
+    interests: []
+  });
+  const [interestInput, setInterestInput] = useState('');
+
+  const suggestedInterests = ['AI', 'Technology', 'Finance', 'Space', 'Startups', 'Sports', 'Economy'];
+
   const profiles = [
-    { id: 'student', title: lang==='en'?'Student':'छात्र', desc: lang==='en'?'Focus on tech, careers & future.':'तकनीक व करियर पर जोर', icon: <GraduationCap /> },
-    { id: 'investor', title: lang==='en'?'Investor / Business':'निवेशक / व्यापार', desc: lang==='en'?'Markets, economy & policy.':'बाजार व अर्थव्यवस्था', icon: <Briefcase /> },
-    { id: 'general', title: lang==='en'?'General':'सामान्‍य', desc: lang==='en'?'Mixed global & national feed.':'मिश्रित समाचार फीड', icon: <Globe /> },
-    { id: 'youngExplorer', title: lang==='en'?'Young Explorer':'युवा खोजकर्ता', desc: lang==='en'?'Simplified news & science facts.':'सरल विज्ञान व तथ्य', icon: <BrainCircuit /> },
+    { id: 'student', title: lang==='en'?'Student':'छात्र', icon: <GraduationCap size={20} /> },
+    { id: 'investor', title: lang==='en'?'Investor':'निवेशक', icon: <Briefcase size={20} /> },
+    { id: 'general', title: lang==='en'?'General':'सामान्‍य', icon: <Globe size={20} /> },
+    { id: 'youngExplorer', title: lang==='en'?'Young Explorer':'युवा खोजकर्ता', icon: <BrainCircuit size={20} /> },
   ];
 
+  const addInterest = (interest) => {
+    const trimmed = interest.trim();
+    if (trimmed && !formData.interests.includes(trimmed)) {
+      setFormData(prev => ({
+        ...prev,
+        interests: [...prev.interests, trimmed]
+      }));
+    }
+    setInterestInput('');
+  };
+
+  const removeInterest = (interest) => {
+    setFormData(prev => ({
+      ...prev,
+      interests: prev.interests.filter(i => i !== interest)
+    }));
+  };
+
+  const isReturningUser = !!localStorage.getItem('insightx_user');
+
+  const handleEnter = () => {
+    if (isReturningUser || (formData.name && formData.email)) {
+      // Merge with existing data if any
+      const existingUser = JSON.parse(localStorage.getItem('insightx_user') || '{}');
+      const updatedUser = { ...existingUser, ...formData };
+      onComplete(updatedUser);
+    } else {
+      alert('Please enter at least Name and Email');
+    }
+  };
+
   return (
-    <div className="fade-in main-wrapper flex flex-col items-center justify-center p-4" style={{ minHeight: '100vh' }}>
-      <h1 className="text-2xl mb-1 text-center font-bold">
-        {lang === 'en' ? 'Select Profile' : 'प्रोफ़ाइल चुनें'}
-      </h1>
-      <p className="text-muted mb-4 text-center font-modern">
-        {lang === 'en' ? 'Personalize your news intelligence feed.' : 'अपने समाचार फ़ीड को वैयक्तिकृत करें।'}
-      </p>
-      
-      <div className="flex flex-col gap-3 w-full" style={{ maxWidth: '400px', marginTop: '2rem' }}>
-        {profiles.map(p => (
-          <div key={p.id} className="profile-card" onClick={() => onSelect(p.id)}>
-            <div className="profile-icon-wrapper">
-              {p.icon}
+    <div className="fade-in onboarding-container">
+      <div className="onboarding-card">
+        <h2 className="onboarding-title">
+          {isReturningUser ? (lang === 'en' ? 'Choose Your Focus' : 'अपना फोकस चुनें') : (lang === 'en' ? 'Welcome to InsightX' : 'InsightX में आपका स्वागत है')}
+        </h2>
+        <p className="onboarding-subtitle">
+          {isReturningUser ? (lang === 'en' ? 'Switch profile or update interests' : 'प्रोफ़ाइल बदलें या रुचियां अपडेट करें') : (lang === 'en' ? 'Let\'s personalize your experience' : 'आइए आपके अनुभव को वैयक्तिकृत करें')}
+        </p>
+
+        {!isReturningUser && (
+          <>
+            <div className="form-group">
+              <label>{lang === 'en' ? 'Name' : 'नाम'}</label>
+              <input 
+                type="text" 
+                placeholder={lang === 'en' ? 'Enter your name' : 'अपना नाम दर्ज करें'} 
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+              />
             </div>
-            <div className="profile-content">
-              <span className="profile-title">{p.title}</span>
-              <span className="profile-desc">{p.desc}</span>
+
+            <div className="form-group">
+              <label>{lang === 'en' ? 'Email' : 'ईमेल'}</label>
+              <input 
+                type="email" 
+                placeholder={lang === 'en' ? 'Enter your email' : 'अपना ईमेल दर्ज करें'} 
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+              />
             </div>
+          </>
+        )}
+
+        <div className="form-group">
+          <label>{lang === 'en' ? 'Select Profile' : 'प्रोफ़ाइल चुनें'}</label>
+          <div className="role-grid">
+            {profiles.map(p => (
+              <div 
+                key={p.id} 
+                className={`role-option ${formData.role === p.id ? 'active' : ''}`}
+                onClick={() => setFormData({...formData, role: p.id})}
+              >
+                {p.icon}
+                <span>{p.title}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+
+        <div className="form-group">
+          <label>{lang === 'en' ? 'What are your interests?' : 'आपकी रुचियां क्या हैं?'}</label>
+          <div className="tag-input-wrapper">
+            <input 
+              type="text" 
+              placeholder={lang === 'en' ? 'Type and press Enter or +' : 'टाइप करें और Enter दबाएं'} 
+              value={interestInput}
+              onChange={(e) => setInterestInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addInterest(interestInput)}
+            />
+            <button className="add-tag-btn" onClick={() => addInterest(interestInput)}>+</button>
+          </div>
+          
+          <div className="suggested-interests">
+            {suggestedInterests.map(interest => (
+              <button 
+                key={interest} 
+                className="suggested-btn"
+                onClick={() => addInterest(interest)}
+                disabled={formData.interests.includes(interest)}
+              >
+                {interest}
+              </button>
+            ))}
+          </div>
+
+          <div className="interest-tags">
+            {formData.interests.map(interest => (
+              <span key={interest} className="interest-tag">
+                {interest}
+                <button onClick={() => removeInterest(interest)}>✕</button>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <button className="enter-platform-btn" onClick={handleEnter}>
+          {lang === 'en' ? 'Enter Platform' : 'प्लेटफ़ॉर्म में प्रवेश करें'}
+          <ChevronRight size={18} />
+        </button>
       </div>
     </div>
   );
 }
+
 
 function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
   const [activeCategory, setActiveCategory] = useState('All');
@@ -340,18 +497,29 @@ function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
   // Pre-defined categories
   const categories = ['All', 'Tech Innovation', 'AI & Future', 'Startups', 'Science', 'Global Trends', 'Sports', 'Entertainment', 'Lifestyle', 'Education', 'Economy', 'Careers', 'Politics'];
 
+  const handleLogout = () => {
+    localStorage.removeItem('insightx_user');
+    window.location.hash = 'landing';
+    window.location.reload(); // Hard reset for clean state
+  };
+
   return (
     <div className="fade-in bg-white" style={{ minHeight: '100vh' }}>
       <header className="header">
         <div>
-          <div className="logo-text">InsightX <span>AI</span></div>
+          <div className="logo-text" onClick={() => window.location.hash = 'landing'} style={{ cursor: 'pointer' }}>
+            InsightX <span>AI</span>
+          </div>
           <div className="tagline">
             {profile === 'youngExplorer' ? (lang==='en'?'Learn the World!':'दुनिया सीखें!') : (lang==='en'?'Understand the World Around You':'दुनिया को समझें')}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button className="profile-icon" onClick={onProfileClick} aria-label="Change Profile">
-            <User size={20} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button className="profile-icon" onClick={onProfileClick} title="Switch Profile">
+            <User size={18} />
+          </button>
+          <button className="profile-icon logout-btn" onClick={handleLogout} title="Logout">
+            <LogOut size={18} />
           </button>
         </div>
       </header>
@@ -375,8 +543,18 @@ function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
 
         {/* 2️⃣ CENTER MAIN FEED */}
         <main className="center-feed p-4">
-          {/* Categories */}
-          {(profile === 'student' || profile === 'general') && (
+          <div className="feed-container">
+            {/* 🎯 Layout: Title -> Categories -> SubTabs -> Cards */}
+            <div className="profile-header fade-in">
+              <h1 className="profile-title">
+                {profile === 'investor' ? 'Market Portfolio & Insights' : 
+                 profile === 'student' ? 'Academic & Campus Trends' : 
+                 profile === 'youngExplorer' ? 'Fun Stories & Discoveries' : 
+                 'Daily Digest & Global Updates'}
+              </h1>
+            </div>
+
+            {/* Categories - Available for ALL profiles */}
             <div className="category-tabs fade-in">
               {categories.map(cat => (
                 <button 
@@ -391,7 +569,6 @@ function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
                 </button>
               ))}
             </div>
-          )}
 
           {/* Sub Tabs for "All" Category */}
           {activeCategory === 'All' && (
@@ -439,9 +616,9 @@ function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
               ) : (
                 /* For You Tab */
                 <div className="news-grid-vertical">
-                   {feedNews.map(news => (
+                   {forYouNews.map(news => (
                      <div 
-                        key={news.id} 
+                        key={`foryou-${news.id}`} 
                         className={`news-card-horizontal ${profile === 'youngExplorer' ? 'young-explorer-card' : ''}`} 
                         onClick={() => onArticleClick(news.id)}
                      >
@@ -486,7 +663,8 @@ function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
               </div>
             )}
           </div>
-        </main>
+        </div>
+      </main>
 
         {/* 3️⃣ RIGHT SIDEBAR: Visual Stories */}
         <aside className="sidebar right-sidebar">
