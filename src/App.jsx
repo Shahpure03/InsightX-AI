@@ -328,16 +328,17 @@ function ProfileSelection({ onSelect, lang }) {
 
 function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [subTab, setSubTab] = useState('top'); // 'top' or 'forYou'
   
-  const importantNews = NEWS_DATA.find(n => n.isImportant);
+  const importantNews = NEWS_DATA.filter(n => n.isImportant);
   let feedNews = NEWS_DATA.filter(n => !n.isImportant);
 
   if (activeCategory !== 'All') {
-    feedNews = feedNews.filter(n => n.category === activeCategory);
+    feedNews = NEWS_DATA.filter(n => n.category === activeCategory);
   }
 
   // Pre-defined categories
-  const categories = ['All', 'Tech Innovation', 'AI & Future', 'Startups', 'Science', 'Global Trends'];
+  const categories = ['All', 'Tech Innovation', 'AI & Future', 'Startups', 'Science', 'Global Trends', 'Sports', 'Entertainment', 'Lifestyle', 'Education', 'Economy', 'Careers', 'Politics'];
 
   return (
     <div className="fade-in bg-white" style={{ minHeight: '100vh' }}>
@@ -348,79 +349,163 @@ function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
             {profile === 'youngExplorer' ? (lang==='en'?'Learn the World!':'दुनिया सीखें!') : (lang==='en'?'Understand the World Around You':'दुनिया को समझें')}
           </div>
         </div>
-        <button className="profile-icon" onClick={onProfileClick} aria-label="Change Profile">
-          <User size={20} />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button className="profile-icon" onClick={onProfileClick} aria-label="Change Profile">
+            <User size={20} />
+          </button>
+        </div>
       </header>
 
-      <main className="main-wrapper p-4">
-        {/* Investor Profile - Market Panel */}
-        {profile === 'investor' && (
-          <div className="fade-in">
-            <h2 className="section-title text-sm" style={{color: 'var(--text-secondary)'}}>Market Overview</h2>
-            <div className="market-panel">
-              {MARKET_DATA.map((item, i) => (
-                <div key={i} className="market-card">
-                  <span className="market-symbol">{item.symbol}</span>
-                  <span className="market-val">{item.value}</span>
-                  <span className={`market-change ${item.up ? 'up' : 'down'}`}>
-                    {item.up ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
-                    {item.change}
-                  </span>
-                </div>
+      <div className="dashboard-layout">
+        {/* 1️⃣ LEFT SIDEBAR: Quick Reads */}
+        <aside className="sidebar left-sidebar">
+          <div className="sidebar-header">
+            <TrendingUp size={16} />
+            <h2 className="sidebar-title">Quick Reads</h2>
+          </div>
+          <div className="sidebar-scroll no-scrollbar">
+            {NEWS_DATA.map(news => (
+              <div key={`quick-${news.id}`} className="quick-read-item" onClick={() => onArticleClick(news.id)}>
+                <span className="quick-tag">{news.category}</span>
+                <h4 className="quick-headline">{lang === 'en' ? news.title : news.hindiTitle}</h4>
+              </div>
+            ))}
+          </div>
+        </aside>
+
+        {/* 2️⃣ CENTER MAIN FEED */}
+        <main className="center-feed p-4">
+          {/* Categories */}
+          {(profile === 'student' || profile === 'general') && (
+            <div className="category-tabs fade-in">
+              {categories.map(cat => (
+                <button 
+                  key={cat} 
+                  className={`pill-btn ${activeCategory === cat ? 'active' : ''}`}
+                  onClick={() => {
+                    setActiveCategory(cat);
+                    if (cat === 'All') setSubTab('top');
+                  }}
+                >
+                  {cat}
+                </button>
               ))}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Categories (Student, General) */}
-        {(profile === 'student' || profile === 'general') && (
-          <div className="category-tabs mb-4 fade-in">
-            {categories.map(cat => (
+          {/* Sub Tabs for "All" Category */}
+          {activeCategory === 'All' && (
+            <div className="sub-tabs-container fade-in">
               <button 
-                key={cat} 
-                className={`pill-btn ${activeCategory === cat ? 'active' : ''}`}
-                onClick={() => setActiveCategory(cat)}
+                className={`sub-tab ${subTab === 'top' ? 'tab-active active' : 'tab-inactive'}`} 
+                onClick={() => setSubTab('top')}
               >
-                {lang === 'en' ? cat : cat}
+                Top Stories
               </button>
-            ))}
-          </div>
-        )}
-
-        {/* Important Now */}
-        {importantNews && activeCategory === 'All' && (
-          <section className="mb-4">
-            <h2 className="section-title">
-              {profile === 'youngExplorer' ? (lang==='en'?'Big News Today! 🚀':'आज की बड़ी खबर! 🚀') : (lang==='en'?'Top Stories':'मुख्य समाचार')}
-            </h2>
-            <div className={`news-card ${profile === 'youngExplorer' ? 'young-explorer-card' : ''}`} onClick={() => onArticleClick(importantNews.id)}>
-              {profile !== 'youngExplorer' && <span className="category-tag">{importantNews.category}</span>}
-              <h3>{lang === 'en' ? importantNews.title : importantNews.hindiTitle}</h3>
-              <p>{lang === 'en' ? importantNews.summary : importantNews.hindiSummary}</p>
+              <button 
+                className={`sub-tab ${subTab === 'forYou' ? 'tab-active active' : 'tab-inactive'}`} 
+                onClick={() => setSubTab('forYou')}
+              >
+                For You
+              </button>
             </div>
-          </section>
-        )}
+          )}
 
-        {/* Feed List */}
-        <section>
-          <h2 className="section-title mt-4">
-            {profile === 'youngExplorer' ? (lang==='en'?'Cool Facts & Stories 🌟':'मजेदार कहानियाँ 🌟') : (lang==='en'?'For You':'आपके लिए')}
-          </h2>
-          <div className="news-grid">
-            {feedNews.map(news => (
-               <div key={news.id} className={`news-card ${profile === 'youngExplorer' ? 'young-explorer-card' : ''}`} onClick={() => onArticleClick(news.id)}>
-                 {profile !== 'youngExplorer' && <span className="category-tag">{news.category}</span>}
-                 <h3>{lang === 'en' ? news.title : news.hindiTitle}</h3>
-                 <p>{lang === 'en' ? news.summary : news.hindiSummary}</p>
-               </div>
-            ))}
-            {feedNews.length === 0 && (
-              <p className="text-muted mt-2">No news found for this category.</p>
+          {/* Content rendering */}
+          <div className="feed-content-area fade-in">
+            {activeCategory === 'All' ? (
+              subTab === 'top' ? (
+                /* Top Stories Tab */
+                <div className="news-grid-vertical">
+                  {importantNews.map(news => (
+                    <div 
+                      key={news.id} 
+                      className={`news-card-horizontal ${profile === 'youngExplorer' ? 'young-explorer-card' : ''}`} 
+                      onClick={() => onArticleClick(news.id)}
+                    >
+                      <div className="card-content">
+                        <span className="category-tag-inline">{news.category}</span>
+                        <h3 className="card-title">{lang === 'en' ? news.title : news.hindiTitle}</h3>
+                        <p className="card-summary">{lang === 'en' ? news.summary : news.hindiSummary}</p>
+                      </div>
+                      {news.image && (
+                        <div className="card-thumbnail-fixed">
+                          <img src={news.image} alt="" className="news-image" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                /* For You Tab */
+                <div className="news-grid-vertical">
+                   {feedNews.map(news => (
+                     <div 
+                        key={news.id} 
+                        className={`news-card-horizontal ${profile === 'youngExplorer' ? 'young-explorer-card' : ''}`} 
+                        onClick={() => onArticleClick(news.id)}
+                     >
+                       <div className="card-content">
+                         <span className="category-tag-inline">{news.category}</span>
+                         <h3 className="card-title">{lang === 'en' ? news.title : news.hindiTitle}</h3>
+                         <p className="card-summary">{lang === 'en' ? news.summary : news.hindiSummary}</p>
+                       </div>
+                       {news.image && (
+                         <div className="card-thumbnail-fixed">
+                           <img src={news.image} alt="" className="news-image" />
+                         </div>
+                       )}
+                     </div>
+                  ))}
+                </div>
+              )
+            ) : (
+              /* Other Categories */
+              <div className="news-grid-vertical">
+                {feedNews.map(news => (
+                   <div 
+                      key={news.id} 
+                      className={`news-card-horizontal ${profile === 'youngExplorer' ? 'young-explorer-card' : ''}`} 
+                      onClick={() => onArticleClick(news.id)}
+                   >
+                     <div className="card-content">
+                       <span className="category-tag-inline">{news.category}</span>
+                       <h3 className="card-title">{lang === 'en' ? news.title : news.hindiTitle}</h3>
+                       <p className="card-summary">{lang === 'en' ? news.summary : news.hindiSummary}</p>
+                     </div>
+                     {news.image && (
+                       <div className="card-thumbnail-fixed">
+                         <img src={news.image} alt="" className="news-image" />
+                       </div>
+                     )}
+                   </div>
+                ))}
+                {feedNews.length === 0 && (
+                  <p className="text-muted mt-2">No news found for this category.</p>
+                )}
+              </div>
             )}
           </div>
-        </section>
-      </main>
+        </main>
+
+        {/* 3️⃣ RIGHT SIDEBAR: Visual Stories */}
+        <aside className="sidebar right-sidebar">
+          <div className="sidebar-header">
+            <MonitorPlay size={16} />
+            <h2 className="sidebar-title">Visual Stories</h2>
+          </div>
+          <div className="sidebar-scroll no-scrollbar">
+            {NEWS_DATA.map(news => (
+               <div key={`visual-${news.id}`} className="visual-story-card-overlay visual-card" onClick={() => onArticleClick(news.id)}>
+                <img src={news.image} alt="" className="visual-bg" />
+                <div className="visual-overlay">
+                  <h4 className="visual-overlay-title">{lang === 'en' ? news.title : news.hindiTitle}</h4>
+                </div>
+              </div>
+            ))}
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
