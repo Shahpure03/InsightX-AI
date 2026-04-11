@@ -10,18 +10,12 @@ from typing import Any
 from supabase import Client, create_client
 
 from models.article import EmbeddedArticle, IngestionResult
+from config import config
 
+if not config.SUPABASE_URL or not config.SUPABASE_KEY:
+    raise RuntimeError("Missing SUPABASE credentials in .env")
 
-def _require_env(name: str) -> str:
-    value = os.getenv(name)
-    if not value:
-        raise RuntimeError(f"Missing required environment variable: {name}")
-    return value
-
-
-SUPABASE_URL = _require_env("SUPABASE_URL")
-SUPABASE_KEY = _require_env("SUPABASE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+supabase: Client = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
 
 
 # ──────────────────────────────────────────────
@@ -175,14 +169,10 @@ async def get_recent_articles(
     def _query() -> list[dict]:
         q = (
             supabase.table("articles_raw")
-            .select("id,title,url,source,published_at,category,image_url,thumbnail,video_id")
-            .eq("language", language)
-            .eq("status", "active")           # only active articles in feed
+            .select("id,title,url,source,published_at")
             .order("published_at", desc=True)
             .limit(limit)
         )
-        if category:
-            q = q.eq("category", category)
         if source:
             q = q.eq("source", source)
         return q.execute().data or []
@@ -339,3 +329,36 @@ async def get_ingestion_logs(limit: int = 20) -> list[dict]:
         )
 
     return await asyncio.to_thread(_query)
+
+# ──────────────────────────────────────────────
+# USERS
+# ──────────────────────────────────────────────
+
+async def create_or_update_user(email: str, name: str, role: str, interests: list[str]) -> dict:
+    """Creates a user or updates them if they exist."""
+    
+    def _db_call() -> dict:
+        # 1. Upsert into users table
+        user_payload = {
+            "email": email,
+            # "display_name": name, # Temporarily bypassed to prevent PGRST204 schema cache error
+            "active_profile": role
+        }
+        res = supabase.table("users").upsert(user_payload, on_conflict="email").execute()
+        user_row = res.data[0]
+        user_id = user_row["id"]
+        
+        # 2. Upsert into user_interest_profiles
+        profile_payload = {
+            "user_id": user_id,
+            "profile_type": role,
+            "selected_topics": interests
+        }
+        # Note: on_conflict requires unique index constraint `user_id, profile_type`.
+        prof_res = supabase.table("user_interest_profiles").upsert(
+            profile_payload, on_conflict="user_id, profile_type"
+        ).execute()
+        
+        return user_row
+        
+    return await asyncio.to_thread(_db_call)
