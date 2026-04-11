@@ -5,7 +5,7 @@ from __future__ import annotations
 from groq import AsyncGroq
 from config import config
 
-MODEL_NAME = "llama-3.3-70b-versatile"
+MODEL_NAME = "llama-3.1-8b-instant"
 
 def _get_client() -> AsyncGroq:
     """Return Groq client lazily to ensure env vars are loaded."""

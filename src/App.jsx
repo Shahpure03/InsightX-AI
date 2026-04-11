@@ -19,7 +19,7 @@ const MARKET_DATA = [
 
 const NEWS_DATA = [
   {
-    id: '1',
+    id: 'a0000000-0000-0000-0000-000000000001',
     category: 'Global Trends',
     title: 'Middle East Conflict Impacts Global Trade Routes',
     hindiTitle: 'मध्य पूर्व संघर्ष का वैश्विक व्यापार पर प्रभाव',
@@ -75,7 +75,7 @@ const NEWS_DATA = [
     }
   },
   {
-    id: '2',
+    id: 'a0000000-0000-0000-0000-000000000002',
     category: 'AI & Future',
     title: 'Generative AI Accelerates Tech Automation',
     hindiTitle: 'जेनरेटिव एआई ने टेक ऑटोमेशन को गति दी',
@@ -129,7 +129,7 @@ const NEWS_DATA = [
     }
   },
   {
-    id: '3',
+    id: 'a0000000-0000-0000-0000-000000000003',
     category: 'Science',
     title: 'New Robotic Rover Detects Subsurface Mars Ice',
     hindiTitle: 'रोवर ने मंगल पर बर्फ की खोज की',
@@ -173,7 +173,7 @@ const NEWS_DATA = [
     }
   },
   {
-    id: '4',
+    id: 'a0000000-0000-0000-0000-000000000004',
     category: 'Economy',
     title: 'Central Bank Maintains Interest Rates for Q3',
     hindiTitle: 'केंद्रीय बैंक ने ब्याज दरों को स्थिर रखा',
@@ -189,7 +189,7 @@ const NEWS_DATA = [
     whatToDo: { investor: [{ en: 'Assess bond yields vs equity risks', hi: 'बॉन्ड यील्ड और इक्विटी रिस्क का आकलन करें' }] }
   },
   {
-    id: '5',
+    id: 'a0000000-0000-0000-0000-000000000005',
     category: 'Education',
     title: 'New Global Scholarship Program for AI Research',
     hindiTitle: 'एआई रिसर्च के लिए नया वैश्विक छात्रवृत्ति कार्यक्रम',
@@ -210,8 +210,32 @@ export default function App() {
   const [profile, setProfile] = useState(null);
   const [selectedArticleId, setSelectedArticleId] = useState(null);
   const [lang, setLang] = useState('en'); 
+  const [articles, setArticles] = useState(NEWS_DATA);
 
   useEffect(() => {
+    // Fetch initial feed from DB
+    fetch('http://localhost:8001/api/feed')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success' && data.articles && data.articles.length > 0) {
+          const mappedArticles = data.articles.map((a, idx) => ({
+             id: a.id,
+             category: a.category || 'Global Trends',
+             title: a.title,
+             hindiTitle: a.title,
+             marathiTitle: a.title,
+             summary: a.source || 'Breaking News',
+             hindiSummary: a.source || 'Breaking News',
+             marathiSummary: a.source || 'Breaking News',
+             image: a.image_url || a.thumbnail || 'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=600&h=400&q=80',
+             url: a.url,
+             isImportant: idx < 2
+          }));
+          setArticles(mappedArticles);
+        }
+      })
+      .catch(err => console.error("Error fetching feed:", err));
+
     // Load stored user data
     const savedUser = localStorage.getItem('insightx_user');
     if (savedUser) {
@@ -274,6 +298,7 @@ export default function App() {
       )}
       {currentScreen === 'feed' && (
         <FeedScreen 
+          articles={articles}
           profile={profile} 
           lang={lang}
           onProfileClick={() => navigate('profile')}
@@ -283,6 +308,7 @@ export default function App() {
       {currentScreen === 'insight' && (
         <InsightScreen 
           articleId={selectedArticleId} 
+          articles={articles}
           profile={profile}
           lang={lang}
           setLang={setLang}
@@ -377,11 +403,28 @@ function OnboardingScreen({ onComplete, lang }) {
 
   const isReturningUser = !!localStorage.getItem('insightx_user');
 
-  const handleEnter = () => {
+  const handleEnter = async () => {
     if (isReturningUser || (formData.name && formData.email)) {
       // Merge with existing data if any
       const existingUser = JSON.parse(localStorage.getItem('insightx_user') || '{}');
       const updatedUser = { ...existingUser, ...formData };
+      
+      // POST to backend ONLY if dealing with a new capture or updates
+      try {
+        const response = await fetch('http://localhost:8001/api/users/onboard', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedUser)
+        });
+        
+        if (!response.ok) {
+            console.error("Failed to sync user with backend");
+            // we proceed gracefully via localstorage anyway for UX flow
+        }
+      } catch(e) {
+          console.error("Backend unreachable", e);
+      }
+      
       onComplete(updatedUser);
     } else {
       alert('Please enter at least Name and Email');
@@ -484,22 +527,22 @@ function OnboardingScreen({ onComplete, lang }) {
 }
 
 
-function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
+function FeedScreen({ articles, profile, lang, onProfileClick, onArticleClick }) {
   const [activeCategory, setActiveCategory] = useState('All');
   const [subTab, setSubTab] = useState('top'); // 'top' or 'forYou'
   
-  const importantNews = NEWS_DATA.filter(n => n.isImportant);
-  let feedNews = NEWS_DATA.filter(n => !n.isImportant);
+  const importantNews = articles.filter(n => n.isImportant);
+  let feedNews = articles.filter(n => !n.isImportant);
 
   if (activeCategory !== 'All') {
-    feedNews = NEWS_DATA.filter(n => n.category === activeCategory);
+    feedNews = articles.filter(n => n.category === activeCategory);
   }
 
   // Define forYouNews logic
   const userData = JSON.parse(localStorage.getItem('insightx_user') || '{}');
   const userInterests = userData.interests || [];
   
-  const forYouNews = NEWS_DATA.filter(news => {
+  const forYouNews = articles.filter(news => {
     // Priority 1: Match profile-specific content
     const hasProfileImpact = news.personalImpact && news.personalImpact[profile];
     
@@ -568,7 +611,7 @@ function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
             <h2 className="sidebar-title">Quick Reads</h2>
           </div>
           <div className="sidebar-scroll no-scrollbar">
-            {NEWS_DATA.map(news => (
+            {articles.map(news => (
               <div key={`quick-${news.id}`} className="quick-read-item" onClick={() => onArticleClick(news.id)}>
                 <span className="quick-tag">{news.category}</span>
                 <h4 className="quick-headline">{lang === 'en' ? news.title : news.hindiTitle}</h4>
@@ -709,7 +752,7 @@ function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
             <h2 className="sidebar-title">Visual Stories</h2>
           </div>
           <div className="sidebar-scroll no-scrollbar">
-            {NEWS_DATA.map(news => (
+            {articles.map(news => (
                <div key={`visual-${news.id}`} className="visual-story-card-overlay visual-card" onClick={() => onArticleClick(news.id)}>
                 <img src={news.image} alt="" className="visual-bg" />
                 <div className="visual-overlay">
@@ -724,12 +767,69 @@ function FeedScreen({ profile, lang, onProfileClick, onArticleClick }) {
   );
 }
 
-function InsightScreen({ articleId, profile, lang, setLang, onBack }) {
-  const article = NEWS_DATA.find(n => n.id === articleId) || NEWS_DATA[0];
+function InsightScreen({ articleId, articles, profile, lang, setLang, onBack }) {
+  const baseArticle = articles.find(n => n.id === articleId) || articles[0];
+  const [article, setArticle] = React.useState(baseArticle);
+  const [isLoading, setIsLoading] = React.useState(true);
+  
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [showVideo, setShowVideo] = React.useState(false);
   const [selectedOpt, setSelectedOpt] = React.useState(null);
   const [activeTab, setActiveTab] = React.useState('summary');
+
+  React.useEffect(() => {
+    if (!articleId) return;
+    setIsLoading(true);
+    fetch('http://localhost:8001/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ article_id: articleId, profile: profile || 'student' })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.profile_used) {
+        // Map backend InsightOutput to frontend expected structure
+        const nextStepsMapped = data.next_steps ? data.next_steps.map(step => ({ en: step, hi: step })) : [];
+        const personalImpacts = data.profile_specific_insights ? Object.values(data.profile_specific_insights).filter(Boolean).map(val => ({ en: JSON.stringify(val), hi: JSON.stringify(val) })) : [];
+        
+        const mapped = {
+          ...baseArticle,
+          summary: data.summary || baseArticle.summary,
+          hindiSummary: data.summary || baseArticle.hindiSummary,
+          confidence: { en: data.fact_check_confidence, hi: data.fact_check_confidence },
+          didYouKnow: { en: data.simplified_explainer || '', hi: data.simplified_explainer || '' },
+          impactChain: data.cause_effect ? Object.keys(data.cause_effect).map(k => ({ text: k, direction: 'up' })) : [{ text: data.sentiment_label, direction: data.sentiment_label === 'positive' ? 'up' : 'down' }],
+          personalImpact: {
+            [profile]: personalImpacts.length ? personalImpacts : [{ en: 'Analyzing impact...', hi: 'Analyzing impact...' }]
+          },
+          whatToDo: {
+            [profile]: nextStepsMapped.length ? nextStepsMapped : [{ en: 'No immediate action required.', hi: 'No immediate action required.' }]
+          },
+          quiz: data.quiz && data.quiz.length > 0 ? {
+            question: { en: data.quiz[0].question || '', hi: data.quiz[0].question || '' },
+            options: (data.quiz[0].options || []).map(opt => ({ en: opt, hi: opt })),
+            answerIndex: data.quiz[0].answer_index || 0
+          } : null
+        };
+        setArticle(mapped);
+      }
+      setIsLoading(false);
+    })
+    .catch(err => {
+      console.error(err);
+      setIsLoading(false);
+    });
+  }, [articleId, profile]);
+
+  if (isLoading) {
+    return (
+      <div className="fade-in bg-white insight-page-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column' }}>
+         <h2 style={{color: 'var(--primary-color)'}}>AI Agents are analyzing this article...</h2>
+         <p style={{color: 'var(--text-secondary)'}}>Extracting facts, checking sentiment, and personalizing insights for you.</p>
+         <button onClick={onBack} style={{marginTop: '20px', padding: '10px 20px', borderRadius: '50px', background: 'var(--bg-secondary)', border: 'none', cursor: 'pointer'}}>Cancel</button>
+      </div>
+    );
+  }
 
   const getLocalizedText = (obj) => {
     return lang === 'en' ? obj.en : (lang === 'hi' ? obj.hi : obj.marathi);

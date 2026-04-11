@@ -1,18 +1,33 @@
 from models.schemas import ArticleInput, AgentContext, InsightOutput
 from tools.news import fetch_article
+from db.supabase_client import get_article_by_id
 from agents import event_agent, reasoning_agent, personalization_agent, action_agent, prediction_agent
 
 async def run_pipeline(article_input: ArticleInput) -> InsightOutput:
     """Executes the multi-agent architecture in sequence."""
     
     # 1. Fetch text
-    news_data = await fetch_article(article_input.url)
-    
+    if article_input.article_id:
+        db_article = await get_article_by_id(article_input.article_id)
+        if not db_article:
+            raise ValueError(f"Article with DB ID {article_input.article_id} not found")
+        news_data = {
+            "text": db_article.get("content", ""),
+            "title": db_article.get("title", ""),
+            "url": db_article.get("url", "")
+        }
+        url_to_use = news_data["url"]
+    elif article_input.url:
+        news_data = await fetch_article(article_input.url)
+        url_to_use = article_input.url
+    else:
+        raise ValueError("Either url or article_id must be provided")
+
     # Initialize the immutable-style Agent Context
     context = AgentContext(
         article_text=news_data.get("text", ""),
         article_title=news_data.get("title", ""),
-        article_url=article_input.url,
+        article_url=url_to_use,
         profile=article_input.profile
     )
     
