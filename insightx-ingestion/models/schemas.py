@@ -7,10 +7,18 @@ class Profile(str, Enum):
     student = "student"
     investor = "investor"
     explorer = "explorer"
+    youngExplorer = "youngExplorer" # Matching frontend state
 
 class ArticleInput(BaseModel):
-    url: str
+    url: Optional[str] = None
+    article_id: Optional[str] = None
     profile: Profile
+
+class UserCreate(BaseModel):
+    name: str = ""
+    email: str
+    role: str = "student"
+    interests: list[str] = []
 
 class AgentContext(BaseModel):
     # Base inputs
