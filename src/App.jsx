@@ -209,12 +209,8 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState('landing');
   const [profile, setProfile] = useState(null);
   const [selectedArticleId, setSelectedArticleId] = useState(null);
-<<<<<<< HEAD
   const [lang, setLang] = useState('en');
-=======
-  const [lang, setLang] = useState('en'); 
   const [articles, setArticles] = useState(NEWS_DATA);
->>>>>>> 3fc14b6654050057887ca1c1bb99d171c8744ec1
 
   useEffect(() => {
     // Fetch initial feed from DB
@@ -301,28 +297,18 @@ export default function App() {
         <OnboardingScreen onComplete={handleOnboardingComplete} lang={lang} />
       )}
       {currentScreen === 'feed' && (
-<<<<<<< HEAD
         <FeedScreen
-          profile={profile}
-=======
-        <FeedScreen 
           articles={articles}
-          profile={profile} 
->>>>>>> 3fc14b6654050057887ca1c1bb99d171c8744ec1
+          profile={profile}
           lang={lang}
           onProfileClick={() => navigate('profile')}
           onArticleClick={handleArticleSelect}
         />
       )}
       {currentScreen === 'insight' && (
-<<<<<<< HEAD
         <InsightScreen
           articleId={selectedArticleId}
-=======
-        <InsightScreen 
-          articleId={selectedArticleId} 
           articles={articles}
->>>>>>> 3fc14b6654050057887ca1c1bb99d171c8744ec1
           profile={profile}
           lang={lang}
           setLang={setLang}
@@ -544,18 +530,14 @@ function OnboardingScreen({ onComplete, lang }) {
 function FeedScreen({ articles, profile, lang, onProfileClick, onArticleClick }) {
   const [activeCategory, setActiveCategory] = useState('All');
   const [subTab, setSubTab] = useState('top'); // 'top' or 'forYou'
-<<<<<<< HEAD
   const [weather, setWeather] = useState({ temp: '30', city: 'Pune' });
 
   useEffect(() => {
-    // 🔑 INSTRUCTIONS: 
-    // 1. Go to https://openweathermap.org/api and sign up for a free account.
-    // 2. Head to your Dashboard -> API Keys.
-    // 3. Copy your key and paste it below between the quotes.
-    const API_KEY = 'dd3e8a458634054c2938e350afc1cb60';
-    const CITY = 'Pune';
-
-    if (API_KEY && API_KEY !== 'YOUR_OPENWEATHER_API_KEY') {
+    // 🛠️ Using environment variable for security
+    const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY; 
+    const CITY = 'Pune'; 
+    
+    if (API_KEY) {
       fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=metric&appid=${API_KEY}`)
         .then(res => res.json())
         .then(data => {
@@ -572,26 +554,15 @@ function FeedScreen({ articles, profile, lang, onProfileClick, onArticleClick })
 
   const importantNews = NEWS_DATA.filter(n => n.isImportant);
   let feedNews = NEWS_DATA.filter(n => !n.isImportant);
-=======
-  
-  const importantNews = articles.filter(n => n.isImportant);
-  let feedNews = articles.filter(n => !n.isImportant);
->>>>>>> 3fc14b6654050057887ca1c1bb99d171c8744ec1
 
   if (activeCategory !== 'All') {
-    feedNews = articles.filter(n => n.category === activeCategory);
+    feedNews = NEWS_DATA.filter(n => n.category === activeCategory);
   }
 
   // Define forYouNews logic
   const userData = JSON.parse(localStorage.getItem('insightx_user') || '{}');
   const userInterests = userData.interests || [];
-<<<<<<< HEAD
-
   const forYouNews = NEWS_DATA.filter(news => {
-=======
-  
-  const forYouNews = articles.filter(news => {
->>>>>>> 3fc14b6654050057887ca1c1bb99d171c8744ec1
     // Priority 1: Match profile-specific content
     const hasProfileImpact = news.personalImpact && news.personalImpact[profile];
 
@@ -801,13 +772,8 @@ function FeedScreen({ articles, profile, lang, onProfileClick, onArticleClick })
             <h2 className="sidebar-title">Visual Stories</h2>
           </div>
           <div className="sidebar-scroll no-scrollbar">
-<<<<<<< HEAD
-            {NEWS_DATA.map(news => (
-              <div key={`visual-${news.id}`} className="visual-story-card-overlay visual-card" onClick={() => onArticleClick(news.id)}>
-=======
             {articles.map(news => (
-               <div key={`visual-${news.id}`} className="visual-story-card-overlay visual-card" onClick={() => onArticleClick(news.id)}>
->>>>>>> 3fc14b6654050057887ca1c1bb99d171c8744ec1
+              <div key={`visual-${news.id}`} className="visual-story-card-overlay visual-card" onClick={() => onArticleClick(news.id)}>
                 <img src={news.image} alt="" className="visual-bg" />
                 <div className="visual-overlay">
                   <h4 className="visual-overlay-title">{lang === 'en' ? news.title : news.hindiTitle}</h4>
