@@ -30,16 +30,7 @@ def _article_payload(article: EmbeddedArticle) -> dict[str, Any]:
         "url":          article.url,
         "source":       article.source.value,
         "published_at": article.published_at.astimezone(timezone.utc).isoformat(),
-        "author":       article.author,
-        "image_url":    article.image_url,
-        "category":     article.category,
-        "language":     article.language,
-        "country":      article.country,
-        "video_id":     article.video_id,
-        "thumbnail":    article.thumbnail,
         "content_hash": article.content_hash,
-        "ingested_at":  article.ingested_at.astimezone(timezone.utc).isoformat(),
-        "status":       "active",
     }
 
 
@@ -48,7 +39,6 @@ def _embedding_payload(article_id: str, article: EmbeddedArticle) -> dict[str, A
     return {
         "article_id": article_id,
         "embedding":  article.embedding,
-        "model_used": os.getenv("EMBEDDING_MODEL", "nomic-embed-text-v1_5"),
     }
 
 
@@ -56,12 +46,8 @@ def _pipeline_state_payload(article_id: str) -> dict[str, Any]:
     """Build initial article_pipeline_states row — all stages false."""
     return {
         "article_id":            article_id,
-        "event_extracted":       False,
+        "event_done":            False,
         "reasoning_done":        False,
-        "enrichment_done":       False,
-        "action_template_done":  False,
-        "prediction_done":       False,
-        "retry_count":           0,
     }
 
 
@@ -99,6 +85,17 @@ async def article_exists(content_hash: str) -> bool:
 # ──────────────────────────────────────────────
 # INSERT
 # ──────────────────────────────────────────────
+
+CAT_MAP = {
+    "general": "Global Trends",
+    "world": "Global Trends",
+    "business": "Economy",
+    "technology": "Tech Innovation",
+    "science": "Science",
+    "health": "Lifestyle",
+    "sports": "Sports",
+    "entertainment": "Entertainment",
+}
 
 async def bulk_insert_articles(articles: list[EmbeddedArticle]) -> int:
     """
@@ -153,6 +150,21 @@ async def bulk_insert_articles(articles: list[EmbeddedArticle]) -> int:
             ).execute()
         await asyncio.to_thread(_insert_states)
 
+    # Insert enrichment payload to save category
+    enrichment_payloads = []
+    for article_id, article in id_map.items():
+        mapped_cat = CAT_MAP.get((article.category or "general").lower(), "Global Trends")
+        enrichment_payloads.append({
+            "article_id": article_id,
+            "categories": [mapped_cat],
+        })
+    if enrichment_payloads:
+        def _insert_enrichment() -> None:
+            supabase.table("articles_enriched").upsert(
+                enrichment_payloads, on_conflict="article_id"
+            ).execute()
+        await asyncio.to_thread(_insert_enrichment)
+
     return inserted_count
 
 
@@ -169,13 +181,22 @@ async def get_recent_articles(
     def _query() -> list[dict]:
         q = (
             supabase.table("articles_raw")
-            .select("id,title,url,source,published_at")
+            .select("id,title,url,source,published_at,articles_enriched(categories)")
             .order("published_at", desc=True)
             .limit(limit)
         )
         if source:
             q = q.eq("source", source)
-        return q.execute().data or []
+        
+        data = q.execute().data or []
+        for d in data:
+            if d.get("articles_enriched"):
+                categories = d["articles_enriched"].get("categories", [])
+                if categories:
+                    d["category"] = categories[0]
+            if "articles_enriched" in d:
+                del d["articles_enriched"]
+        return data
 
     return await asyncio.to_thread(_query)
 
@@ -231,18 +252,16 @@ async def semantic_search(
 # PIPELINE STATE HELPERS
 # ──────────────────────────────────────────────
 
-async def get_pending_articles(stage: str = "event_extracted", batch_size: int = 20) -> list[dict]:
+async def get_pending_articles(stage: str = "event_done", batch_size: int = 20) -> list[dict]:
     """
     Return article_ids where the given pipeline stage is not yet done.
-    stage must be one of: event_extracted, reasoning_done, enrichment_done,
-                          action_template_done, prediction_done
+    stage must be one of: event_done, reasoning_done
     """
     def _query() -> list[dict]:
         return (
             supabase.table("article_pipeline_states")
             .select("article_id")
             .eq(stage, False)
-            .lt("retry_count", 3)
             .order("last_processed_at", desc=False, nullsfirst=True)
             .limit(batch_size)
             .execute()
@@ -259,9 +278,6 @@ async def mark_pipeline_stage(article_id: str, stage: str, error: str | None = N
     }
     if error:
         payload["error"] = error
-        payload["retry_count"] = supabase.rpc(
-            "increment_retry", {"p_article_id": article_id}
-        )  # handled DB-side or read-then-write
     else:
         payload[stage] = True
         payload["error"] = None
@@ -341,7 +357,7 @@ async def create_or_update_user(email: str, name: str, role: str, interests: lis
         # 1. Upsert into users table
         user_payload = {
             "email": email,
-            # "display_name": name, # Temporarily bypassed to prevent PGRST204 schema cache error
+            "name": name,
             "active_profile": role
         }
         res = supabase.table("users").upsert(user_payload, on_conflict="email").execute()
@@ -362,3 +378,108 @@ async def create_or_update_user(email: str, name: str, role: str, interests: lis
         return user_row
         
     return await asyncio.to_thread(_db_call)
+
+async def log_user_article_interaction(user_id: str, article_id: str, profile_type: str, category: str, insight: dict) -> None:
+    """Logs the article read event, caches the AI insight output, and updates topic history."""
+    if not user_id or not article_id:
+        return
+        
+    def _db_call() -> None:
+        # 1. Upsert into insights cache
+        insight_payload = {
+            "article_id": article_id,
+            "user_id": user_id,
+            "profile_type": profile_type,
+            "personalization_output": insight.get("profile_specific_insights", {}),
+            "action_output": {"next_steps": insight.get("next_steps", []), "quiz": insight.get("quiz", [])},
+            "prediction_output": {"future_predictions": insight.get("future_predictions", [])},
+            "hallucination_score": 1.0, 
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        try:
+            supabase.table("insights").upsert(insight_payload, on_conflict="article_id, user_id, profile_type").execute()
+        except Exception as e:
+            print(f"Failed to upsert insight: {e}")
+
+        # 2. Insert into user_reading_history
+        history_payload = {
+            "user_id": user_id,
+            "article_id": article_id,
+            "completed": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        try:
+            supabase.table("user_reading_history").insert(history_payload).execute()
+        except Exception as e:
+            print(f"Failed to insert user_reading_history: {e}")
+
+        # 3. Upsert into user_topic_history (increment read_count)
+        category_val = category
+        if not category_val:
+            try:
+                art = supabase.table("articles_raw").select("category").eq("id", article_id).execute()
+                if art.data and art.data[0].get("category"):
+                    category_val = art.data[0]["category"]
+            except Exception:
+                pass
+
+        if category_val:
+            try:
+                res = supabase.table("user_topic_history").select("read_count").eq("user_id", user_id).eq("topic", category_val).execute()
+                current_count = 0
+                if res.data:
+                    current_count = res.data[0].get("read_count", 0)
+                
+                topic_payload = {
+                    "user_id": user_id,
+                    "topic": category_val,
+                    "read_count": current_count + 1,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+                supabase.table("user_topic_history").upsert(topic_payload, on_conflict="user_id, topic").execute()
+            except Exception as e:
+                print(f"Failed to update user_topic_history: {e}")
+
+    await asyncio.to_thread(_db_call)
+
+async def upsert_article_enrichment(article_id: str, insight: dict) -> None:
+    def _db_call():
+        payload = {
+            "article_id": article_id,
+            "categories": ["General"],
+            "entities": [],
+            "sentiment": 0.0,
+            "event_output": insight.get("event_context", {}),
+            "reasoning_output": insight.get("cause_effect", {})
+        }
+        try:
+            supabase.table("articles_enriched").upsert(payload, on_conflict="article_id").execute()
+        except Exception as e:
+            print(f"Failed to upsert articles_enriched: {e}")
+    await asyncio.to_thread(_db_call)
+
+async def mark_article_pipeline_success(article_id: str) -> None:
+    def _db_call():
+        payload = {
+            "article_id": article_id,
+            "event_done": True,
+            "reasoning_done": True,
+            "error": None
+        }
+        try:
+            supabase.table("article_pipeline_states").upsert(payload, on_conflict="article_id").execute()
+        except Exception as e:
+            print(f"Failed to upsert article_pipeline_states: {e}")
+    await asyncio.to_thread(_db_call)
+
+async def upsert_article_embedding(article_id: str, embedding: list[float], model_used: str = "nomic-embed-text-v1_5") -> None:
+    def _db_call():
+        payload = {
+            "article_id": article_id,
+            "embedding": embedding
+        }
+        try:
+            supabase.table("article_embeddings").upsert(payload, on_conflict="article_id").execute()
+        except Exception as e:
+            print(f"Failed to upsert article_embeddings: {e}")
+    await asyncio.to_thread(_db_call)
