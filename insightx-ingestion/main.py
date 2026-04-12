@@ -24,10 +24,53 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from ingestion.gnews import GNewsClient
+import uuid
+
+FRONTEND_TO_GNEWS_MAP = {
+    "All": "general",
+    "Tech Innovation": "technology",
+    "AI & Future": "technology",
+    "Startups": "business",
+    "Science": "science",
+    "Global Trends": "world",
+    "Sports": "sports",
+    "Entertainment": "entertainment",
+    "Lifestyle": "health",
+    "Education": "general",
+    "Economy": "business",
+    "Careers": "business",
+    "Politics": "nation"
+}
+
 @app.get("/api/feed")
-async def get_feed():
+async def get_feed(category: str = "All"):
     try:
-        articles = await get_recent_articles(limit=20)
+        articles = await get_recent_articles(limit=20, category=category)
+        
+        if category and category != "All":
+            try:
+                gnews_cat = FRONTEND_TO_GNEWS_MAP.get(category, "general")
+                client = GNewsClient()
+                gnews_articles = await client.fetch_top(category=gnews_cat, max_results=15)
+                
+                existing_urls = {a.get("url") for a in articles}
+                
+                for a in gnews_articles:
+                    if a.url not in existing_urls:
+                        articles.append({
+                            "id": f"gnews_{uuid.uuid4()}",
+                            "category": category,
+                            "title": a.title,
+                            "url": a.url,
+                            "source": a.source.value,
+                            "published_at": a.published_at.isoformat(),
+                            "image_url": a.image_url,
+                            "content": a.content
+                        })
+            except Exception as live_e:
+                print(f"GNews Live Fetch Error: {live_e}")
+                
         return {"status": "success", "articles": articles}
     except Exception as e:
         print(f"Error fetching feed: {e}")

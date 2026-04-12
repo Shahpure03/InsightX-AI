@@ -179,16 +179,18 @@ async def get_recent_articles(
     source: str | None = None,
 ) -> list[dict]:
     def _query() -> list[dict]:
+        fetch_limit = 150 if category and category != "All" else limit
         q = (
             supabase.table("articles_raw")
             .select("id,title,url,source,published_at,articles_enriched(categories)")
             .order("published_at", desc=True)
-            .limit(limit)
+            .limit(fetch_limit)
         )
         if source:
             q = q.eq("source", source)
         
         data = q.execute().data or []
+        results = []
         for d in data:
             if d.get("articles_enriched"):
                 categories = d["articles_enriched"].get("categories", [])
@@ -196,7 +198,16 @@ async def get_recent_articles(
                     d["category"] = categories[0]
             if "articles_enriched" in d:
                 del d["articles_enriched"]
-        return data
+                
+            # Perform Python side filtering
+            if category and category != "All":
+                if d.get("category") != category:
+                    continue
+                    
+            results.append(d)
+            if len(results) >= limit:
+                break
+        return results
 
     return await asyncio.to_thread(_query)
 
@@ -444,9 +455,16 @@ async def log_user_article_interaction(user_id: str, article_id: str, profile_ty
 
 async def upsert_article_enrichment(article_id: str, insight: dict) -> None:
     def _db_call():
+        # Preserve existing categories if they were assigned during ingestion
+        try:
+            existing = supabase.table("articles_enriched").select("categories").eq("article_id", article_id).execute()
+            cats = existing.data[0].get("categories") if existing.data and existing.data[0].get("categories") else ["General"]
+        except Exception:
+            cats = ["General"]
+            
         payload = {
             "article_id": article_id,
-            "categories": ["General"],
+            "categories": cats,
             "entities": [],
             "sentiment": 0.0,
             "event_output": insight.get("event_context", {}),

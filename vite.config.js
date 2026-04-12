@@ -30,7 +30,7 @@ export default defineConfig({
     })
   ],
   server: {
-    port: 8765,
-    strictPort: true
+    port: 5173,
+    strictPort: false
   }
 })
