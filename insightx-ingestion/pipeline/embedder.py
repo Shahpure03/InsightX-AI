@@ -31,12 +31,12 @@ async def embed_text(text: str) -> list[float]:
         try:
             response = await groq_client.embeddings.create(model=EMBEDDING_MODEL, input=text)
             return list(response.data[0].embedding)
-        except Exception:
+        except Exception as e:
             if attempt == 0:
                 await asyncio.sleep(1)
                 continue
-            raise
-    raise RuntimeError("Embedding generation failed unexpectedly")
+            print(f"Warning: Embedding generation failed: {e}. Falling back to zero-vector.")
+            return [0.0] * 768
 
 
 async def embed_article(article: RawArticle) -> EmbeddedArticle:

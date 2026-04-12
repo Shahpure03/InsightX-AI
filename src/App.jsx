@@ -424,7 +424,12 @@ function OnboardingScreen({ onComplete, lang }) {
             body: JSON.stringify(updatedUser)
         });
         
-        if (!response.ok) {
+        if (response.ok) {
+            const data = await response.json();
+            if (data.user && data.user.id) {
+                updatedUser.id = data.user.id;
+            }
+        } else {
             console.error("Failed to sync user with backend");
             // we proceed gracefully via localstorage anyway for UX flow
         }
@@ -787,10 +792,11 @@ function InsightScreen({ articleId, articles, profile, lang, setLang, onBack }) 
   React.useEffect(() => {
     if (!articleId) return;
     setIsLoading(true);
+    const userData = JSON.parse(localStorage.getItem('insightx_user') || '{}');
     fetch('http://localhost:8001/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ article_id: articleId, profile: profile || 'student' })
+      body: JSON.stringify({ article_id: articleId, profile: profile || 'student', user_id: userData.id })
     })
     .then(res => res.json())
     .then(data => {
