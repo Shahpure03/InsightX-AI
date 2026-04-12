@@ -10,3 +10,4 @@ gTTS
 newspaper3k
 pydantic-settings
 yfinance
+lxml[html-clean]
