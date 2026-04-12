@@ -797,7 +797,16 @@ function InsightScreen({ articleId, articles, profile, lang, setLang, onBack }) 
       if (data && data.profile_used) {
         // Map backend InsightOutput to frontend expected structure
         const nextStepsMapped = data.next_steps ? data.next_steps.map(step => ({ en: step, hi: step })) : [];
-        const personalImpacts = data.profile_specific_insights ? Object.values(data.profile_specific_insights).filter(Boolean).map(val => ({ en: JSON.stringify(val), hi: JSON.stringify(val) })) : [];
+        let personalImpacts = [];
+        if (data.profile_specific_insights) {
+          Object.values(data.profile_specific_insights).filter(Boolean).forEach(val => {
+            if (Array.isArray(val)) {
+              val.forEach(item => personalImpacts.push({ en: item, hi: item }));
+            } else {
+              personalImpacts.push({ en: String(val), hi: String(val) });
+            }
+          });
+        }
         
         const mapped = {
           ...baseArticle,
@@ -805,7 +814,7 @@ function InsightScreen({ articleId, articles, profile, lang, setLang, onBack }) 
           hindiSummary: data.summary || baseArticle.hindiSummary,
           confidence: { en: data.fact_check_confidence, hi: data.fact_check_confidence },
           didYouKnow: { en: data.simplified_explainer || '', hi: data.simplified_explainer || '' },
-          impactChain: data.cause_effect ? Object.keys(data.cause_effect).map(k => ({ text: k, direction: 'up' })) : [{ text: data.sentiment_label, direction: data.sentiment_label === 'positive' ? 'up' : 'down' }],
+          impactChain: Array.isArray(data.cause_effect) ? data.cause_effect : (data.cause_effect && typeof data.cause_effect === 'object' ? Object.keys(data.cause_effect).map(k => ({ text: k, description: data.cause_effect[k], direction: 'up' })) : [{ text: data.sentiment_label, direction: data.sentiment_label === 'positive' ? 'up' : 'down' }]),
           personalImpact: {
             [profile]: personalImpacts.length ? personalImpacts : [{ en: 'Analyzing impact...', hi: 'Analyzing impact...' }]
           },
@@ -984,7 +993,7 @@ function InsightScreen({ articleId, articles, profile, lang, setLang, onBack }) 
                     </div>
                     <div className="chain-content-box">
                       <div className="chain-label">{lang === 'en' ? node.text : (node.hindiText || node.text)}</div>
-                      <div className="chain-desc">{lang === 'en' ? 'Direct influence on market metrics' : 'बाजार मेट्रिक्स पर सीधा प्रभाव'}</div>
+                      <div className="chain-desc">{lang === 'en' ? (node.description || 'Direct influence on market metrics') : (node.hindiDescription || node.description || 'बाजार मेट्रिक्स पर सीधा प्रभाव')}</div>
                     </div>
                   </div>
                 ))}

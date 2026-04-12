@@ -32,7 +32,7 @@ class AgentContext(BaseModel):
     fact_check: Dict[str, Any] = Field(default_factory=dict) # verdict, score
     
     # 2. Reasoning Agent Outputs
-    cause_effect_chain: Dict[str, Any] = Field(default_factory=dict)
+    cause_effect_chain: List[Dict[str, Any]] = Field(default_factory=list)
     sentiment: Dict[str, Any] = Field(default_factory=dict) # label, score
     simplified_text: str = ""
     concept_links: Dict[str, Any] = Field(default_factory=dict) # Set by Student
@@ -69,7 +69,7 @@ class InsightOutput(BaseModel):
     
     # Reasoning
     sentiment_label: str
-    cause_effect: Dict[str, Any]
+    cause_effect: List[Dict[str, Any]]
     simplified_explainer: str
     
     # Personalization Features

@@ -58,17 +58,18 @@ async def run_pipeline(title: str = None, content: str = None, article_id: str =
         "  \"summary\": \"A short 2-3 sentence summary\",\n"
         "  \"event_facts\": {\"who\": \"...\", \"what\": \"...\", \"where\": \"...\", \"when\": \"...\", \"why\": \"...\"},\n"
         "  \"sentiment_label\": \"positive\",\n"
-        "  \"cause_effect\": {\"Cause\": \"Effect\"},\n"
+        "  \"cause_effect\": [{\"text\": \"Event name\", \"description\": \"Short reason\", \"direction\": \"up|down|neutral\"}],\n"
         "  \"simplified_explainer\": \"Gamified/simple explanation\",\n"
         "  \"deep_dive\": \"Historical/broader context of the event\",\n"
         "  \"action_data\": {},\n"
         "  \"future_predictions\": [\"Prediction 1\", \"Prediction 2\"]\n"
         "}\n\n"
         "Profile-specific action_data rules:\n"
-        "- student: inject {\"career_impact\": [\"impact 1\"]}\n"
-        "- investor: inject {\"stock_impact\": [\"impact 1\"]}\n"
-        "- young explorer: inject {\"quiz\": {\"question\": \"...\", \"options\": [\"A\",\"B\",\"C\",\"D\"], \"answer_index\": 0}, \"glossary\": [\"term 1\"]}\n"
-        "- default: inject {\"suggested_actions\": [\"action 1\"]}"
+        "EVERY profile MUST contain 'suggested_actions': [\"action 1\", \"action 2\"]\n"
+        "- student: also inject {\"career_impact\": [\"impact 1\", \"impact 2\", \"impact 3\"]}\n"
+        "- investor: also inject {\"stock_impact\": [\"impact 1\", \"impact 2\", \"impact 3\"]}\n"
+        "- youngExplorer: also inject {\"young_explorer_impact\": [\"impact 1\", \"impact 2\", \"impact 3\"], \"quiz\": {\"question\": \"...\", \"options\": [\"A\",\"B\",\"C\",\"D\"], \"answer_index\": 0}}\n"
+        "- general: also inject {\"general_impact\": [\"impact 1\", \"impact 2\", \"impact 3\"]}"
     )
     
     user_prompt = f"PROFILE: {profile}\n\nTITLE: {article_title}\n\nCONTENT:\n{article_text[:6000]}"
@@ -96,6 +97,11 @@ async def run_pipeline(title: str = None, content: str = None, article_id: str =
         custom_insights["career_impact"] = action_data["career_impact"]
     if "stock_impact" in action_data:
         custom_insights["portfolio_signals"] = action_data["stock_impact"]
+    if "young_explorer_impact" in action_data:
+        custom_insights["fun_facts"] = action_data["young_explorer_impact"]
+    if "general_impact" in action_data:
+        custom_insights["general_impact"] = action_data["general_impact"]
+        
     if "suggested_actions" in action_data:
         next_steps = action_data["suggested_actions"]
     if "quiz" in action_data:
@@ -115,7 +121,7 @@ async def run_pipeline(title: str = None, content: str = None, article_id: str =
         event_context=safe_event_facts,
         fact_check_confidence="high", 
         sentiment_label=parsed.get("sentiment_label", "neutral"),
-        cause_effect=parsed.get("cause_effect", {"Event": safe_summary}),
+        cause_effect=(parsed.get("cause_effect") if isinstance(parsed.get("cause_effect"), list) else [{"text": "Impact", "description": "Analyzing implications...", "direction": "neutral"}]),
         simplified_explainer=parsed.get("simplified_explainer", "Content too complex to simplify."),
         deep_dive=parsed.get("deep_dive", "No deeper contextual insight generated."),
         translated_context="",
